@@ -5,129 +5,83 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Siêu Từ Vựng Tiếng Trung (HSK 1–5)</title>
 
-  <!-- =======================
-       CSS (nội tuyến) rất cơ bản
-       ======================= -->
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
     body {
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-      background-color: #F3F4F6; /* xám nhạt */
-      color: #1F2937;            /* xám đậm */
+      margin: 0; padding: 0; font-family: Arial, sans-serif;
+      background-color: #F3F4F6; color: #1F2937;
     }
     header {
-      background-color: #4F46E5; /* tím đậm */
-      color: white;
-      padding: 12px 24px;
-      text-align: center;
-      font-size: 1.5rem;
+      background-color: #4F46E5; color: white;
+      padding: 12px 24px; text-align: center; font-size: 1.5rem;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     main {
-      padding: 16px;
-      max-width: 600px;
-      margin: 0 auto;
+      padding: 16px; max-width: 600px; margin: 0 auto;
     }
     .config-area {
-      margin-bottom: 16px;
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      flex-wrap: wrap;
+      margin-bottom: 16px; display: flex; gap: 12px;
+      align-items: center; flex-wrap: wrap;
     }
     .config-area label {
-      font-weight: bold;
-      margin-right: 4px;
+      font-weight: bold; margin-right: 4px;
     }
     .config-area select,
     .config-area button {
-      padding: 6px 10px;
-      font-size: 0.95rem;
-      border: 1px solid #D1D5DB;
-      border-radius: 4px;
-      background-color: white;
-      cursor: pointer;
+      padding: 6px 10px; font-size: 0.95rem;
+      border: 1px solid #D1D5DB; border-radius: 4px;
+      background-color: white; cursor: pointer;
     }
     .config-area select:hover,
     .config-area button:hover {
-      border-color: #4338CA; /* tím đậm */
+      border-color: #4338CA;
     }
-
     #question-area {
-      background-color: white;
-      border-radius: 8px;
+      background-color: white; border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      padding: 20px;
-      margin-top: 16px;
+      padding: 20px; margin-top: 16px;
     }
     #meaning {
-      font-size: 1.2rem;
-      margin-bottom: 16px;
+      font-size: 1.2rem; margin-bottom: 16px;
       text-align: center;
     }
     .option-button {
-      display: block;
-      width: 100%;
-      text-align: center;
-      padding: 12px 0;
-      margin: 6px 0;
-      border: 2px solid #D1D5DB; /* xám nhạt */
-      border-radius: 6px;
-      background-color: white;
-      cursor: pointer;
+      display: block; width: 100%; text-align: center;
+      padding: 12px 0; margin: 6px 0;
+      border: 2px solid #D1D5DB; border-radius: 6px;
+      background-color: white; cursor: pointer;
       font-size: 1.1rem;
       transition: background-color 0.2s, border-color 0.2s;
     }
     .option-button:hover {
-      border-color: #4338CA; /* tím đậm */
+      border-color: #4338CA;
     }
     .option-button.correct {
-      background-color: #D1FAE5; /* xanh nhạt */
-      border-color: #22C55E;     /* xanh lá */
-      color: #166534;
+      background-color: #D1FAE5; border-color: #22C55E; color: #166534;
     }
     .option-button.wrong {
-      background-color: #FECACA; /* đỏ nhạt */
-      border-color: #DC2626;     /* đỏ */
-      color: #991B1B;
+      background-color: #FECACA; border-color: #DC2626; color: #991B1B;
     }
     #next-button {
-      display: none;
-      margin-top: 12px;
-      padding: 10px 24px;
-      background-color: #4338CA; /* tím đậm */
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 1rem;
+      display: none; margin-top: 12px;
+      padding: 10px 24px; background-color: #4338CA;
+      color: white; border: none; border-radius: 6px;
+      cursor: pointer; font-size: 1rem;
     }
     #next-button:hover {
-      background-color: #3730A3; /* tím đậm hơn */
+      background-color: #3730A3;
     }
     #progress {
-      margin-top: 12px;
-      font-size: 0.95rem;
-      color: #4B5563; /* xám vừa */
-      text-align: center;
+      margin-top: 12px; font-size: 0.95rem;
+      color: #4B5563; text-align: center;
     }
     footer {
-      margin-top: 24px;
-      font-size: 0.9rem;
-      color: #6B7280;
-      text-align: center;
-      padding-bottom: 12px;
+      margin-top: 24px; font-size: 0.9rem;
+      color: #6B7280; text-align: center; padding-bottom: 12px;
     }
-
-    /* Responsive nhỏ hơn 500px */
     @media screen and (max-width: 500px) {
       .config-area {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-direction: column; align-items: flex-start;
       }
       .config-area select,
       .config-area button {
@@ -138,9 +92,7 @@
 </head>
 <body>
   <header>Siêu Từ Vựng Tiếng Trung (HSK 1–5)</header>
-
   <main>
-    <!-- === Phần chọn Cấp độ và nút Bắt đầu === -->
     <div class="config-area">
       <label for="level-select">Chọn cấp độ:</label>
       <select id="level-select">
@@ -151,36 +103,24 @@
         <option value="HSK4">HSK 4</option>
         <option value="HSK5">HSK 5</option>
       </select>
-
       <button id="start-button">Bắt đầu Quiz</button>
     </div>
-
-    <!-- === Khu vực hiển thị câu hỏi === -->
     <div id="question-area">
       <div id="meaning">Chọn cấp độ và nhấn “Bắt đầu Quiz”</div>
-      <div id="options">
-        <!-- 4 nút lựa chọn sẽ được tạo tự động ở đây -->
-      </div>
+      <div id="options"></div>
       <button id="next-button">Câu Tiếp Theo</button>
       <div id="progress">0 / 0</div>
     </div>
   </main>
+  <footer>&copy; 2025 – Siêu Từ Vựng – Học tiếng Trung mỗi ngày</footer>
 
-  <footer>
-    &copy; 2025 – Siêu Từ Vựng – Học tiếng Trung mỗi ngày
-  </footer>
-
-  <!-- ======================
-       JavaScript nội tuyến (chỉnh sửa để đúng với "meaning_vi")
-       ====================== -->
   <script>
-    // === Các biến toàn cục ===
-    let allWords = [];        // chứa toàn bộ data từ words.json
-    let filteredWords = [];   // chứa từ sau khi lọc theo HSK level
-    let currentQuestion = {}; // { answerWord, options: [...] }
-    let score = 0;            // số câu đã trả lời đúng
-    let total = 0;            // tổng số câu đã chơi
-    let isQuizActive = false; // quiz đang chạy hay chưa
+    let allWords = [];
+    let filteredWords = [];
+    let currentQuestion = {};
+    let score = 0;
+    let total = 0;
+    let isQuizActive = false;
 
     const levelSelect = document.getElementById("level-select");
     const startButton = document.getElementById("start-button");
@@ -189,13 +129,12 @@
     const nextButton = document.getElementById("next-button");
     const progressEl = document.getElementById("progress");
 
-    // === 2) Khi trang load, fetch words.json ===
     window.addEventListener("DOMContentLoaded", () => {
       fetch("words.json")
         .then(res => res.json())
         .then(data => {
           allWords = data;
-          filteredWords = [...allWords]; // mặc định là ALL
+          filteredWords = [...allWords];
         })
         .catch(err => {
           console.error("Không thể load words.json:", err);
@@ -203,9 +142,8 @@
         });
     });
 
-    // === 3) Hàm lọc theo cấp độ (HSK) ===
     function filterByLevel() {
-      const lvl = levelSelect.value; // "ALL", "HSK1", ...
+      const lvl = levelSelect.value;
       if (lvl === "ALL") {
         filteredWords = [...allWords];
       } else {
@@ -213,12 +151,10 @@
       }
     }
 
-    // === 4) Lấy số ngẫu nhiên trong khoảng [min, max) ===
     function randomInt(min, max) {
       return Math.floor(Math.random() * (max - min)) + min;
     }
 
-    // === 5) Shuffle mảng (Fisher-Yates) ===
     function shuffleArray(arr) {
       const a = arr.slice();
       for (let i = a.length - 1; i > 0; i--) {
@@ -228,9 +164,7 @@
       return a;
     }
 
-    // === 6) Tạo câu hỏi mới ===
     function createNewQuestion() {
-      // Nếu filteredWords < 4, không đủ để quiz
       if (!filteredWords || filteredWords.length < 4) {
         meaningEl.innerText = "Không đủ từ để tạo Quiz ở cấp độ này.";
         optionsEl.innerHTML = "";
@@ -238,12 +172,8 @@
         progressEl.innerText = `${score} / ${total}`;
         return;
       }
-
-      // 6.1) Chọn 1 từ đúng ngẫu nhiên
       const trueIndex = randomInt(0, filteredWords.length);
       const answerWord = filteredWords[trueIndex];
-
-      // 6.2) Lấy 3 từ “nhầm” ngẫu nhiên (cùng level)
       const options = [answerWord];
       while (options.length < 4) {
         const idx = randomInt(0, filteredWords.length);
@@ -252,31 +182,18 @@
           options.push(w);
         }
       }
-
-      // 6.3) Trộn 4 lựa chọn
       const shuffledOptions = shuffleArray(options);
-
       currentQuestion = {
         answerWord: answerWord,
         options: shuffledOptions
       };
-
-      // 6.4) Tăng tổng số câu đã chơi
       total++;
-
-      // 6.5) Hiển thị câu hỏi
       renderQuestion();
     }
 
-    // === 7) Hiển thị câu hỏi và các nút lựa chọn ===
     function renderQuestion() {
-      // 7.1) Hiển thị nghĩa (tiếng Việt) => phải là meaning_vi
       meaningEl.innerHTML = `Chọn chữ Hán có nghĩa: <strong>${currentQuestion.answerWord.meaning_vi}</strong>`;
-
-      // 7.2) Xóa sạch các nút cũ
       optionsEl.innerHTML = "";
-
-      // 7.3) Tạo 4 nút cho 4 options
       currentQuestion.options.forEach((w, idx) => {
         const btn = document.createElement("button");
         btn.className = "option-button";
@@ -285,26 +202,17 @@
         btn.onclick = () => handleAnswer(idx, btn);
         optionsEl.appendChild(btn);
       });
-
-      // 7.4) Ẩn nút “Câu Tiếp Theo”
       nextButton.style.display = "none";
-
-      // 7.5) Cập nhật progress
       progressEl.innerText = `${score} / ${total}`;
     }
 
-    // === 8) Xử lý khi user chọn đáp án ===
     function handleAnswer(chosenIdx, btnEl) {
       const correctIdx = currentQuestion.options.findIndex(
         w => w.id === currentQuestion.answerWord.id
       );
-
-      // Ngăn không cho chọn lần hai
       if (btnEl.classList.contains("correct") || btnEl.classList.contains("wrong")) {
         return;
       }
-
-      // 8.1) Nếu đúng → màu xanh, nếu sai → màu đỏ và khoanh xanh nút đúng
       if (chosenIdx === correctIdx) {
         btnEl.classList.add("correct");
         score++;
@@ -315,25 +223,17 @@
           allBtns[correctIdx].classList.add("correct");
         }
       }
-
-      // === 8.2) Phát audio ngay khi chọn xong đáp án ===
-      // Audio của đáp án đúng (currentQuestion.answerWord.audio)
       const audio = new Audio(currentQuestion.answerWord.audio);
       audio.play().catch(err => {
         console.warn("Không thể phát audio:", err);
       });
-
-      // 8.3) Hiển thị nút “Câu Tiếp Theo”
       nextButton.style.display = "block";
       nextButton.onclick = () => {
         createNewQuestion();
       };
-
-      // 8.4) Cập nhật lại progress
       progressEl.innerText = `${score} / ${total}`;
     }
 
-    // === 9) Khi người dùng bấm “Bắt đầu Quiz” ===
     startButton.addEventListener("click", () => {
       score = 0;
       total = 0;
@@ -342,7 +242,6 @@
       createNewQuestion();
     });
 
-    // === 10) Khi đổi cấp độ (level) ===
     levelSelect.addEventListener("change", () => {
       if (isQuizActive) {
         score = 0;
