@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Siêu Từ Vựng Tiếng Trung (HSK 1–5)</title>
-
   <style>
     * { box-sizing: border-box; }
     body {
@@ -192,7 +191,11 @@
     }
 
     function renderQuestion() {
-      meaningEl.innerHTML = `Chọn chữ Hán có nghĩa: <strong>${currentQuestion.answerWord.meaning_vi}</strong>`;
+      // Use fallback for meaning: meaning_vi or meaning
+      const m = currentQuestion.answerWord.meaning_vi !== undefined
+                ? currentQuestion.answerWord.meaning_vi
+                : currentQuestion.answerWord.meaning;
+      meaningEl.innerHTML = `Chọn chữ Hán có nghĩa: <strong>${m}</strong>`;
       optionsEl.innerHTML = "";
       currentQuestion.options.forEach((w, idx) => {
         const btn = document.createElement("button");
@@ -223,10 +226,15 @@
           allBtns[correctIdx].classList.add("correct");
         }
       }
-      const audio = new Audio(currentQuestion.answerWord.audio);
-      audio.play().catch(err => {
-        console.warn("Không thể phát audio:", err);
-      });
+      // Play audio if available
+      if (currentQuestion.answerWord.audio) {
+        const audio = new Audio(currentQuestion.answerWord.audio);
+        audio.play().catch(err => {
+          console.warn("Không thể phát audio:", err);
+        });
+      } else {
+        console.warn("Không có trường audio cho từ này");
+      }
       nextButton.style.display = "block";
       nextButton.onclick = () => {
         createNewQuestion();
