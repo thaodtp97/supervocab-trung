@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Siêu Từ Vựng Tiếng Trung (HSK 1–5)</title>
-
   <style>
     * { box-sizing: border-box; }
     body {
@@ -93,6 +92,7 @@
 <body>
   <header>Siêu Từ Vựng Tiếng Trung (HSK 1–5)</header>
   <main>
+    <!-- Phần chọn cấp độ và nút Bắt đầu -->
     <div class="config-area">
       <label for="level-select">Chọn cấp độ:</label>
       <select id="level-select">
@@ -105,6 +105,8 @@
       </select>
       <button id="start-button">Bắt đầu Quiz</button>
     </div>
+
+    <!-- Phần hiển thị câu hỏi -->
     <div id="question-area">
       <div id="meaning">Chọn cấp độ và nhấn “Bắt đầu Quiz”</div>
       <div id="options"></div>
@@ -129,6 +131,7 @@
     const nextButton = document.getElementById("next-button");
     const progressEl = document.getElementById("progress");
 
+    // Khi trang load, fetch từ words.json
     window.addEventListener("DOMContentLoaded", () => {
       fetch("words.json")
         .then(res => res.json())
@@ -142,6 +145,7 @@
         });
     });
 
+    // Lọc danh sách theo cấp độ
     function filterByLevel() {
       const lvl = levelSelect.value;
       if (lvl === "ALL") {
@@ -151,10 +155,12 @@
       }
     }
 
+    // Hàm random (trả số nguyên >=min, <max)
     function randomInt(min, max) {
       return Math.floor(Math.random() * (max - min)) + min;
     }
 
+    // Hàm shuffle array
     function shuffleArray(arr) {
       const a = arr.slice();
       for (let i = a.length - 1; i > 0; i--) {
@@ -164,6 +170,7 @@
       return a;
     }
 
+    // Tạo câu hỏi mới
     function createNewQuestion() {
       if (!filteredWords || filteredWords.length < 4) {
         meaningEl.innerText = "Không đủ từ để tạo Quiz ở cấp độ này.";
@@ -172,8 +179,11 @@
         progressEl.innerText = `${score} / ${total}`;
         return;
       }
+      // Chọn từ đúng (ngẫu nhiên)
       const trueIndex = randomInt(0, filteredWords.length);
       const answerWord = filteredWords[trueIndex];
+
+      // Lấy 3 từ khác làm distractors
       const options = [answerWord];
       while (options.length < 4) {
         const idx = randomInt(0, filteredWords.length);
@@ -183,30 +193,35 @@
         }
       }
       const shuffledOptions = shuffleArray(options);
-      currentQuestion = {
-        answerWord: answerWord,
-        options: shuffledOptions
-      };
+      currentQuestion = { answerWord, options: shuffledOptions };
       total++;
       renderQuestion();
     }
 
+    // Hiển thị câu hỏi và 4 nút đáp án
     function renderQuestion() {
-      const meaningText = currentQuestion.answerWord.meaning_vi || currentQuestion.answerWord.meaning || "";
+      const meaningText = currentQuestion.answerWord.meaning_vi 
+                        || currentQuestion.answerWord.meaning 
+                        || "";
       meaningEl.innerHTML = `Chọn chữ Hán có nghĩa: <strong>${meaningText}</strong>`;
       optionsEl.innerHTML = "";
+
       currentQuestion.options.forEach((w, idx) => {
         const btn = document.createElement("button");
         btn.className = "option-button";
-        btn.innerHTML = `<div style="font-size:1.3rem;">${w.hanzi}</div>
-                         <div style="font-size:0.9rem; color:#4B5563;">${w.pinyin}</div>`;
+        btn.innerHTML = `
+          <div style="font-size:1.3rem;">${w.hanzi}</div>
+          <div style="font-size:0.9rem; color:#4B5563;">${w.pinyin}</div>
+        `;
         btn.onclick = () => handleAnswer(idx, btn);
         optionsEl.appendChild(btn);
       });
+
       nextButton.style.display = "none";
       progressEl.innerText = `${score} / ${total}`;
     }
 
+    // Xử lý khi người dùng chọn 1 đáp án
     function handleAnswer(chosenIdx, btnEl) {
       const correctIdx = currentQuestion.options.findIndex(
         w => w.id === currentQuestion.answerWord.id
@@ -224,17 +239,18 @@
           allBtns[correctIdx].classList.add("correct");
         }
       }
-      // Phát audio với encodeURI để tránh lỗi ký tự đặc biệt
-      const audioPath = currentQuestion.answerWord.audio;
+
+      // Phát audio ngay sau khi chọn
+      const audioPath = currentQuestion.answerWord.audio; 
       if (audioPath) {
+        // encodeURI để hỗ trợ ký tự Hán
         const encodedPath = encodeURI(audioPath);
         const audio = new Audio(encodedPath);
         audio.play().catch(err => {
           console.warn("Không thể phát audio:", err);
         });
-      } else {
-        console.warn("Không tìm thấy trường audio cho từ này.");
       }
+
       nextButton.style.display = "block";
       nextButton.onclick = () => {
         createNewQuestion();
@@ -242,6 +258,7 @@
       progressEl.innerText = `${score} / ${total}`;
     }
 
+    // Bắt đầu quiz
     startButton.addEventListener("click", () => {
       score = 0;
       total = 0;
@@ -250,6 +267,7 @@
       createNewQuestion();
     });
 
+    // Khi đổi cấp độ
     levelSelect.addEventListener("change", () => {
       if (isQuizActive) {
         score = 0;
