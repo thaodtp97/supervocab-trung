@@ -316,55 +316,17 @@
         }
       }
 
-      // **8.2) BỎ PHÁT AUDIO NGAY TẠI ĐÂY** (không play audio khi chọn)
-      // Nếu có dòng: 
-      //   const audio = new Audio(currentQuestion.answerWord.audio);
-      //   audio.play();
-      // thì hãy comment hoặc xóa nó đi.
+      // === 8.2) Phát audio ngay khi chọn xong đáp án ===
+      const audio = new Audio(currentQuestion.answerWord.audio);
+      audio.play().catch(err => {
+        console.warn("Không thể phát audio:", err);
+      });
 
-      // 8.3) Hiển thị nút “Câu Tiếp Theo”, gán sự kiện cho nó
+      // 8.3) Hiển thị nút “Câu Tiếp Theo”
       nextButton.style.display = "block";
       nextButton.onclick = () => {
-        // Khi user bấm “Câu Tiếp Theo”, ta sẽ phát audio cho đáp án đúng,
-        // rồi đợi một khoảng nhỏ (ví dụ 800ms) để audio “nổ” lên, 
-        // sau đó mới tạo câu hỏi mới.
-        const audio = new Audio(currentQuestion.answerWord.audio);
-        audio.play().catch(err => {
-          console.warn("Không thể phát audio:", err);
-        });
-        // Đợi 800ms rồi sang câu mới:
-        setTimeout(() => {
-          createNewQuestion();
-        }, 800);
+        createNewQuestion();
       };
 
       // 8.4) Cập nhật lại progress
-      progressEl.innerText = `${score} / ${total}`;
-    }
-
-    // === 9) Khi người dùng bấm “Bắt đầu Quiz” ===
-    startButton.addEventListener("click", () => {
-      score = 0;
-      total = 0;
-      isQuizActive = true;
-      filterByLevel();
-      createNewQuestion();
-    });
-
-    // === 10) Khi đổi cấp độ (level) ===
-    levelSelect.addEventListener("change", () => {
-      if (isQuizActive) {
-        score = 0;
-        total = 0;
-        meaningEl.innerText = "Đã đổi cấp độ. Nhấn 'Bắt đầu Quiz' để chơi lại.";
-        optionsEl.innerHTML = "";
-        nextButton.style.display = "none";
-        progressEl.innerText = `${score} / ${total}`;
-        filterByLevel();
-      } else {
-        filterByLevel();
-      }
-    });
-  </script>
-</body>
-</html>
+      progressEl.innerText = `${score} /
