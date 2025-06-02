@@ -171,7 +171,7 @@
   </footer>
 
   <!-- ======================
-       JavaScript nội tuyến (đã chỉnh sửa)
+       JavaScript nội tuyến (chỉnh sửa để đúng với "meaning_vi")
        ====================== -->
   <script>
     // === Các biến toàn cục ===
@@ -270,8 +270,8 @@
 
     // === 7) Hiển thị câu hỏi và các nút lựa chọn ===
     function renderQuestion() {
-      // 7.1) Hiển thị nghĩa (tiếng Việt)
-      meaningEl.innerHTML = `Chọn chữ Hán có nghĩa: <strong>${currentQuestion.answerWord.meaning}</strong>`;
+      // 7.1) Hiển thị nghĩa (tiếng Việt) => phải là meaning_vi
+      meaningEl.innerHTML = `Chọn chữ Hán có nghĩa: <strong>${currentQuestion.answerWord.meaning_vi}</strong>`;
 
       // 7.2) Xóa sạch các nút cũ
       optionsEl.innerHTML = "";
@@ -317,6 +317,7 @@
       }
 
       // === 8.2) Phát audio ngay khi chọn xong đáp án ===
+      // Audio của đáp án đúng (currentQuestion.answerWord.audio)
       const audio = new Audio(currentQuestion.answerWord.audio);
       audio.play().catch(err => {
         console.warn("Không thể phát audio:", err);
@@ -329,4 +330,32 @@
       };
 
       // 8.4) Cập nhật lại progress
-      progressEl.innerText = `${score} /
+      progressEl.innerText = `${score} / ${total}`;
+    }
+
+    // === 9) Khi người dùng bấm “Bắt đầu Quiz” ===
+    startButton.addEventListener("click", () => {
+      score = 0;
+      total = 0;
+      isQuizActive = true;
+      filterByLevel();
+      createNewQuestion();
+    });
+
+    // === 10) Khi đổi cấp độ (level) ===
+    levelSelect.addEventListener("change", () => {
+      if (isQuizActive) {
+        score = 0;
+        total = 0;
+        meaningEl.innerText = "Đã đổi cấp độ. Nhấn 'Bắt đầu Quiz' để chơi lại.";
+        optionsEl.innerHTML = "";
+        nextButton.style.display = "none";
+        progressEl.innerText = `${score} / ${total}`;
+        filterByLevel();
+      } else {
+        filterByLevel();
+      }
+    });
+  </script>
+</body>
+</html>
