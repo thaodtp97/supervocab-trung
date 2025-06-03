@@ -2,100 +2,277 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
+  <title>Siêu Từ Vựng Tiếng Trung (HSK 1–5) – Gamification</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Siêu Từ Vựng Tiếng Trung (HSK 1–5)</title>
   <style>
-    * { box-sizing: border-box; }
+    /* ===========================
+       BASIC RESET & LAYOUT
+    =========================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
     body {
-      margin: 0; padding: 0; font-family: Arial, sans-serif;
-      background-color: #F3F4F6; color: #1F2937;
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      background-color: #f2f3f5;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+    button {
+      cursor: pointer;
+    }
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    /* ===========================
+       HEADER
+    =========================== */
     header {
-      background-color: #4F46E5; color: white;
-      padding: 12px 24px; text-align: center; font-size: 1.5rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      background-color: #5e35b1;
+      color: #fff;
+      padding: 1rem;
+      text-align: center;
+      position: relative;
     }
+    header h1 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      font-size: 0.9rem;
+    }
+    .stats div {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .stats div span.icon {
+      font-size: 1.2rem;
+    }
+
+    /* ===========================
+       MAIN QUIZ AREA
+    =========================== */
     main {
-      padding: 16px; max-width: 600px; margin: 0 auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem;
     }
-    .config-area {
-      margin-bottom: 16px; display: flex; gap: 12px;
-      align-items: center; flex-wrap: wrap;
+    .controls {
+      margin-bottom: 1rem;
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      gap: 0.5rem;
     }
-    .config-area label {
-      font-weight: bold; margin-right: 4px;
+    .controls select, .controls button {
+      padding: 0.6rem 0.8rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      flex: 1;
     }
-    .config-area select,
-    .config-area button {
-      padding: 6px 10px; font-size: 0.95rem;
-      border: 1px solid #D1D5DB; border-radius: 4px;
-      background-color: white; cursor: pointer;
+    .controls button {
+      background-color: #5e35b1;
+      color: #fff;
+      border: none;
     }
-    .config-area select:hover,
-    .config-area button:hover {
-      border-color: #4338CA;
+    .quiz-container {
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 500px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
     }
-    #question-area {
-      background-color: white; border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      padding: 20px; margin-top: 16px;
-    }
-    #meaning {
-      font-size: 1.2rem; margin-bottom: 16px;
+    .question-text {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
       text-align: center;
     }
-    .option-button {
-      display: block; width: 100%; text-align: center;
-      padding: 12px 0; margin: 6px 0;
-      border: 2px solid #D1D5DB; border-radius: 6px;
-      background-color: white; cursor: pointer;
-      font-size: 1.1rem;
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+    .option {
+      padding: 0.7rem 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+      background-color: #fafafa;
       transition: background-color 0.2s, border-color 0.2s;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-    .option-button:hover {
-      border-color: #4338CA;
+    .option.correct {
+      background-color: #c8e6c9;
+      border-color: #388e3c;
     }
-    .option-button.correct {
-      background-color: #D1FAE5; border-color: #22C55E; color: #166534;
+    .option.wrong {
+      background-color: #ffcdd2;
+      border-color: #d32f2f;
     }
-    .option-button.wrong {
-      background-color: #FECACA; border-color: #DC2626; color: #991B1B;
+    .option.disabled {
+      pointer-events: none;
+      opacity: 0.7;
     }
-    #next-button {
-      display: none; margin-top: 12px;
-      padding: 10px 24px; background-color: #4338CA;
-      color: white; border: none; border-radius: 6px;
-      cursor: pointer; font-size: 1rem;
+    .option span.pinyin {
+      display: block;
+      font-size: 0.85rem;
+      color: #666;
     }
-    #next-button:hover {
-      background-color: #3730A3;
+    .next-btn {
+      margin-top: 1rem;
+      padding: 0.6rem 1rem;
+      background-color: #5e35b1;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.95rem;
+      display: none;
     }
-    #progress {
-      margin-top: 12px; font-size: 0.95rem;
-      color: #4B5563; text-align: center;
+    .progress {
+      margin-top: 0.8rem;
+      text-align: center;
+      color: #555;
     }
+
+    /* ===========================
+       BADGES & LEADERBOARD
+    =========================== */
+    .badges-container, .leaderboard-container {
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 500px;
+      padding: 1rem 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .badges-container h2,
+    .leaderboard-container h2 {
+      font-size: 1.1rem;
+      margin-bottom: 0.8rem;
+      color: #5e35b1;
+    }
+    .badges-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+    .badge {
+      background-color: #eee;
+      color: #555;
+      border-radius: 4px;
+      padding: 0.4rem 0.7rem;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .badge.earned {
+      background-color: #ffd54f;
+      color: #444;
+    }
+    .badge span.icon {
+      font-size: 1rem;
+    }
+    .leaderboard-list {
+      list-style: none;
+    }
+    .leaderboard-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid #ddd;
+      font-size: 0.9rem;
+    }
+    .leaderboard-item:last-child {
+      border-bottom: none;
+    }
+    .leaderboard-item span.rank {
+      width: 20px;
+      text-align: center;
+      color: #777;
+    }
+    .leaderboard-item span.name {
+      flex: 1;
+      margin-left: 0.5rem;
+      color: #333;
+    }
+    .leaderboard-item span.score {
+      width: 50px;
+      text-align: right;
+      color: #5e35b1;
+    }
+
+    /* ===========================
+       FOOTER
+    =========================== */
     footer {
-      margin-top: 24px; font-size: 0.9rem;
-      color: #6B7280; text-align: center; padding-bottom: 12px;
+      text-align: center;
+      padding: 0.8rem 0;
+      font-size: 0.9rem;
+      color: #666;
     }
-    @media screen and (max-width: 500px) {
-      .config-area {
-        flex-direction: column; align-items: flex-start;
+
+    /* ===========================
+       RESPONSIVE
+    =========================== */
+    @media (max-width: 480px) {
+      header h1 { font-size: 1.3rem; }
+      .stats { flex-direction: column; gap: 0.3rem; }
+      .quiz-container, .badges-container, .leaderboard-container {
+        padding: 1rem;
       }
-      .config-area select,
-      .config-area button {
-        width: 100%;
-      }
+      .controls { flex-direction: column; }
     }
   </style>
 </head>
 <body>
-  <header>Siêu Từ Vựng Tiếng Trung (HSK 1–5)</header>
+
+  <!-- ============= HEADER (Score, Combo, Streak) ============= -->
+  <header>
+    <h1>Siêu Từ Vựng Tiếng Trung (HSK 1–5)</h1>
+    <div class="stats">
+      <div class="stat-score">
+        <span class="icon">⭐</span>
+        <span id="scoreValue">0</span>
+      </div>
+      <div class="stat-combo">
+        <span class="icon">🔥</span>
+        <span id="comboValue">0</span>
+      </div>
+      <div class="stat-streak">
+        <span class="icon">📆</span>
+        <span id="streakValue">0 ngày</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============= MAIN CONTENT ============= -->
   <main>
-    <!-- Phần chọn cấp độ và nút Bắt đầu -->
-    <div class="config-area">
-      <label for="level-select">Chọn cấp độ:</label>
-      <select id="level-select">
+
+    <!-- 1) Chọn cấp độ & Bắt đầu Quiz -->
+    <div class="controls">
+      <select id="levelSelect">
         <option value="ALL">Tất cả (HSK 1–5)</option>
         <option value="HSK1">HSK 1</option>
         <option value="HSK2">HSK 2</option>
@@ -103,184 +280,524 @@
         <option value="HSK4">HSK 4</option>
         <option value="HSK5">HSK 5</option>
       </select>
-      <button id="start-button">Bắt đầu Quiz</button>
+      <button id="startQuizBtn">Bắt đầu Quiz</button>
     </div>
 
-    <!-- Phần hiển thị câu hỏi -->
-    <div id="question-area">
-      <div id="meaning">Chọn cấp độ và nhấn “Bắt đầu Quiz”</div>
-      <div id="options"></div>
-      <button id="next-button">Câu Tiếp Theo</button>
-      <div id="progress">0 / 0</div>
+    <!-- 2) Hộp quiz (câu hỏi + options) -->
+    <div class="quiz-container" id="quizContainer" style="display: none;">
+      <div class="question-text" id="questionText">
+        <!-- “Chọn chữ Hán có nghĩa: …” -->
+      </div>
+      <div class="options" id="optionsContainer">
+        <!-- Các options sẽ được đổ vào đây -->
+      </div>
+      <button class="next-btn" id="nextBtn">Câu Tiếp Theo</button>
+      <div class="progress" id="progressText">0 / 0</div>
     </div>
+
+    <!-- 3) Badges (Huy hiệu) -->
+    <div class="badges-container">
+      <h2>Huy hiệu đã đạt được</h2>
+      <div class="badges-list" id="badgesList">
+        <!-- Badge items sẽ được render tại đây -->
+      </div>
+    </div>
+
+    <!-- 4) Leaderboard (Top điểm) -->
+    <div class="leaderboard-container">
+      <h2>BXH (Leaderboard)</h2>
+      <ul class="leaderboard-list" id="leaderboardList">
+        <!-- Top 10 sẽ được hiển thị ở đây -->
+      </ul>
+    </div>
+
   </main>
-  <footer>&copy; 2025 – Siêu Từ Vựng – Học tiếng Trung mỗi ngày</footer>
 
+  <!-- ============= FOOTER ============= -->
+  <footer>
+    © 2025 – Siêu Từ Vựng – Học tiếng Trung mỗi ngày
+  </footer>
+
+  <!-- ============= JAVASCRIPT ============= -->
   <script>
-    let allWords = [];
-    let filteredWords = [];
-    let currentQuestion = {};
-    let score = 0;
-    let total = 0;
-    let isQuizActive = false;
+  (function(){
+    "use strict";
 
-    const levelSelect = document.getElementById("level-select");
-    const startButton = document.getElementById("start-button");
-    const meaningEl = document.getElementById("meaning");
-    const optionsEl = document.getElementById("options");
-    const nextButton = document.getElementById("next-button");
-    const progressEl = document.getElementById("progress");
+    //
+    // ─── I. DỮ LIỆU VÀ BIẾN TOÀN CỤC ──────────────────────────────────────────
+    //
 
-    // Khi trang load, fetch từ words.json
-    window.addEventListener("DOMContentLoaded", () => {
-      fetch("words.json")
-        .then(res => res.json())
-        .then(data => {
-          allWords = data;
-          filteredWords = [...allWords];
-        })
-        .catch(err => {
-          console.error("Không thể load words.json:", err);
-          meaningEl.innerText = "Lỗi tải dữ liệu từ vựng";
-        });
-    });
+    let allWords = [];       // Mảng chứa toàn bộ từ (tải từ words.json)
+    let quizWords = [];      // Mảng chỉ chứa từ theo level vừa chọn
+    let currentIdx = 0;      // Index trong quizWords
+    let score = 0;           // Tổng điểm
+    let combo = 0;           // Combo (số câu liên tiếp trả lời đúng)
+    let maxCombo = 0;        // Combo cao nhất trong lần chơi
+    let streakDays = 0;      // Số ngày liên tiếp đã học
+    let todayDate = "";      // Lưu ngày hôm nay dưới dạng "YYYY-MM-DD"
+    let userName = "";       // Tên người chơi (nhập trước khi bắt đầu)
 
-    // Lọc danh sách theo cấp độ
-    function filterByLevel() {
-      const lvl = levelSelect.value;
-      if (lvl === "ALL") {
-        filteredWords = [...allWords];
+    // Các badges (huy hiệu) và điều kiện đạt:
+    //   - badge id: string định danh
+    //   - label: tên hiển thị
+    //   - icon: emoji (hoặc icon ngắn)
+    //   - condition: hàm kiểm tra nếu badge đã đạt hay chưa
+    // Badge sẽ được lưu trong localStorage dưới key "earnedBadges" (mảng chứa badge id)
+    const BADGES = [
+      {
+        id: "first_correct",
+        label: "Lần đầu Trả Lời Đúng",
+        icon: "🎉",
+        condition: (stats) => stats.correctAnswers >= 1
+      },
+      {
+        id: "combo5",
+        label: "5 Câu Liên Tiếp Đúng",
+        icon: "🔥",
+        condition: (stats) => stats.maxCombo >= 5
+      },
+      {
+        id: "combo10",
+        label: "10 Câu Liên Tiếp Đúng",
+        icon: "💥",
+        condition: (stats) => stats.maxCombo >= 10
+      },
+      {
+        id: "streak7",
+        label: "Chuỗi 7 Ngày Liên Tiếp",
+        icon: "🏅",
+        condition: (stats) => stats.streak >= 7
+      },
+      {
+        id: "streak30",
+        label: "Chuỗi 30 Ngày Liên Tiếp",
+        icon: "🥇",
+        condition: (stats) => stats.streak >= 30
+      }
+    ];
+
+    // Leaderboard lưu trong localStorage dưới key "leaderboardList"
+    // Đây là mảng các đối tượng: { name: "Tên", score: 123, date: "YYYY-MM-DD" }
+    const MAX_LEADERBOARD_ENTRIES = 10;
+
+    //
+    // ─── II. HÀM TIỆN ÍCH VỀ NGÀY (DATE) ───────────────────────────────────
+    //
+
+    /**
+     * Trả về chuỗi “YYYY-MM-DD” của ngày hiện tại
+     */
+    function getCurrentDateString() {
+      const d = new Date();
+      const y = d.getFullYear();
+      let m = d.getMonth() + 1;
+      let dd = d.getDate();
+      if (m < 10) m = "0" + m;
+      if (dd < 10) dd = "0" + dd;
+      return `${y}-${m}-${dd}`;
+    }
+
+    /**
+     * Kiểm tra xem dateString1 có phải là đúng hôm trước của dateString2 không?
+     * dateString1/dateString2 dạng "YYYY-MM-DD"
+     */
+    function isYesterday(dateString1, dateString2) {
+      const d1 = new Date(dateString1);
+      const d2 = new Date(dateString2);
+      const diff = (d2 - d1) / (1000 * 60 * 60 * 24);
+      return diff === 1;
+    }
+
+    //
+    // ─── III. QUẢN LÝ STREAK (NGÀY LIÊN TIẾP) ───────────────────────────────────
+    //
+
+    /**
+     * Khởi tạo hoặc cập nhật streak (dựa vào ngày cuối cùng học)
+     * Lưu trong localStorage:
+     *   - key "lastPlayedDate": "YYYY-MM-DD" của lần chơi cuối
+     *   - key "streakDays": số ngày liên tiếp trước đó
+     */
+    function initOrUpdateStreak() {
+      todayDate = getCurrentDateString();
+      const lastDate = localStorage.getItem("lastPlayedDate");
+      let savedStreak = parseInt(localStorage.getItem("streakDays")) || 0;
+
+      if (lastDate === todayDate) {
+        // Đã chơi hôm nay, không đổi streak
+        streakDays = savedStreak;
+      } else if (lastDate && isYesterday(lastDate, todayDate)) {
+        // Nếu lastDate là ngày hôm qua, tăng streak lên 1
+        streakDays = savedStreak + 1;
+        localStorage.setItem("streakDays", streakDays);
+        localStorage.setItem("lastPlayedDate", todayDate);
       } else {
-        filteredWords = allWords.filter(w => w.level === lvl);
+        // Khởi lại streak (0 → 1) vì đã gián đoạn hoặc lần đầu
+        streakDays = 1;
+        localStorage.setItem("streakDays", "1");
+        localStorage.setItem("lastPlayedDate", todayDate);
+      }
+      // Cập nhật phần hiển thị lên UI
+      document.getElementById("streakValue").innerText = streakDays + " ngày";
+    }
+
+    //
+    // ─── IV. QUẢN LÝ BADGES (HUY HIỆU) ───────────────────────────────────
+    //
+
+    /**
+     * Lấy danh sách các badge đã đạt (mảng chứa id badge) từ localStorage
+     */
+    function getEarnedBadges() {
+      const raw = localStorage.getItem("earnedBadges");
+      if (!raw) return [];
+      try {
+        return JSON.parse(raw);
+      } catch {
+        return [];
       }
     }
 
-    // Hàm random (trả số nguyên >=min, <max)
-    function randomInt(min, max) {
-      return Math.floor(Math.random() * (max - min)) + min;
+    /**
+     * Lưu danh sách earnedBadges (mảng id) về localStorage
+     */
+    function saveEarnedBadges(arr) {
+      localStorage.setItem("earnedBadges", JSON.stringify(arr));
     }
 
-    // Hàm shuffle array
-    function shuffleArray(arr) {
-      const a = arr.slice();
-      for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
-      }
-      return a;
-    }
+    /**
+     * Kiểm tra & cập nhật badge mới nếu đủ điều kiện
+     * stats: { correctAnswers, maxCombo, streak }
+     */
+    function updateBadges(stats) {
+      const earned = getEarnedBadges();
+      let gained = false;
 
-    // Tạo câu hỏi mới
-    function createNewQuestion() {
-      if (!filteredWords || filteredWords.length < 4) {
-        meaningEl.innerText = "Không đủ từ để tạo Quiz ở cấp độ này.";
-        optionsEl.innerHTML = "";
-        nextButton.style.display = "none";
-        progressEl.innerText = `${score} / ${total}`;
-        return;
-      }
-      // Chọn từ đúng (ngẫu nhiên)
-      const trueIndex = randomInt(0, filteredWords.length);
-      const answerWord = filteredWords[trueIndex];
-
-      // Lấy 3 từ khác làm distractors
-      const options = [answerWord];
-      while (options.length < 4) {
-        const idx = randomInt(0, filteredWords.length);
-        const w = filteredWords[idx];
-        if (!options.some(o => o.id === w.id)) {
-          options.push(w);
+      BADGES.forEach(b => {
+        if (!earned.includes(b.id) && b.condition(stats)) {
+          earned.push(b.id);
+          gained = true;
         }
-      }
-      const shuffledOptions = shuffleArray(options);
-      currentQuestion = { answerWord, options: shuffledOptions };
-      total++;
-      renderQuestion();
-    }
-
-    // Hiển thị câu hỏi và 4 nút đáp án
-    function renderQuestion() {
-      const meaningText = currentQuestion.answerWord.meaning_vi 
-                        || currentQuestion.answerWord.meaning 
-                        || "";
-      meaningEl.innerHTML = `Chọn chữ Hán có nghĩa: <strong>${meaningText}</strong>`;
-      optionsEl.innerHTML = "";
-
-      currentQuestion.options.forEach((w, idx) => {
-        const btn = document.createElement("button");
-        btn.className = "option-button";
-        btn.innerHTML = `
-          <div style="font-size:1.3rem;">${w.hanzi}</div>
-          <div style="font-size:0.9rem; color:#4B5563;">${w.pinyin}</div>
-        `;
-        btn.onclick = () => handleAnswer(idx, btn);
-        optionsEl.appendChild(btn);
       });
 
-      nextButton.style.display = "none";
-      progressEl.innerText = `${score} / ${total}`;
+      if (gained) {
+        saveEarnedBadges(earned);
+      }
+      renderBadges();
     }
 
-    // Xử lý khi người dùng chọn 1 đáp án
-    function handleAnswer(chosenIdx, btnEl) {
-      const correctIdx = currentQuestion.options.findIndex(
-        w => w.id === currentQuestion.answerWord.id
-      );
-      if (btnEl.classList.contains("correct") || btnEl.classList.contains("wrong")) {
+    /**
+     * Hiển thị badges trong phần UI
+     */
+    function renderBadges() {
+      const earned = getEarnedBadges();
+      const container = document.getElementById("badgesList");
+      container.innerHTML = "";
+      BADGES.forEach(b => {
+        const div = document.createElement("div");
+        div.className = "badge" + (earned.includes(b.id) ? " earned" : "");
+        div.innerHTML = `<span class="icon">${b.icon}</span> ${b.label}`;
+        container.appendChild(div);
+      });
+    }
+
+    //
+    // ─── V. QUẢN LÝ LEADERBOARD (TOP ĐIỂM) ───────────────────────────────────
+    //
+
+    /**
+     * Lấy danh sách leaderboard (mảng object {name, score, date}) từ localStorage
+     */
+    function getLeaderboard() {
+      const raw = localStorage.getItem("leaderboardList");
+      if (!raw) return [];
+      try {
+        return JSON.parse(raw);
+      } catch {
+        return [];
+      }
+    }
+
+    /**
+     * Lưu mảng leaderboard về localStorage
+     */
+    function saveLeaderboard(arr) {
+      localStorage.setItem("leaderboardList", JSON.stringify(arr));
+    }
+
+    /**
+     * Thêm một entry mới vào leaderboard (name, score, date), giữ top 10
+     */
+    function addToLeaderboard(name, scoreVal) {
+      const all = getLeaderboard();
+      all.push({
+        name: name,
+        score: scoreVal,
+        date: getCurrentDateString()
+      });
+      // Sắp xếp giảm dần theo score
+      all.sort((a,b) => b.score - a.score);
+      // Giữ tối đa MAX_LEADERBOARD_ENTRIES
+      const top = all.slice(0, MAX_LEADERBOARD_ENTRIES);
+      saveLeaderboard(top);
+      renderLeaderboard();
+    }
+
+    /**
+     * Hiển thị leaderboard lên UI
+     */
+    function renderLeaderboard() {
+      const all = getLeaderboard();
+      const ul = document.getElementById("leaderboardList");
+      ul.innerHTML = "";
+      all.forEach((item, idx) => {
+        const li = document.createElement("li");
+        li.className = "leaderboard-item";
+        li.innerHTML = `
+          <span class="rank">${idx + 1}</span>
+          <span class="name">${item.name}</span>
+          <span class="score">${item.score}</span>
+        `;
+        ul.appendChild(li);
+      });
+      if (all.length === 0) {
+        const li = document.createElement("li");
+        li.style.textAlign = "center";
+        li.style.color = "#777";
+        li.innerText = "Chưa có bảng xếp hạng";
+        ul.appendChild(li);
+      }
+    }
+
+    //
+    // ─── VI. QUIZ LOGIC CƠ BẢN (TEXT) ───────────────────────────────────
+    //
+
+    // Tham chiếu đến DOM elements
+    const levelSelect    = document.getElementById("levelSelect");
+    const startQuizBtn   = document.getElementById("startQuizBtn");
+    const quizContainer  = document.getElementById("quizContainer");
+    const questionText   = document.getElementById("questionText");
+    const optionsContainer = document.getElementById("optionsContainer");
+    const nextBtn        = document.getElementById("nextBtn");
+    const progressText   = document.getElementById("progressText");
+    const scoreValue     = document.getElementById("scoreValue");
+    const comboValue     = document.getElementById("comboValue");
+    const streakValue    = document.getElementById("streakValue");
+
+    let correctAnswersCount = 0;  // Tổng số câu trả lời đúng trong lần chơi
+    let levelFilter = "ALL";
+
+    /**
+     * Tải toàn bộ words.json (mảng các object) vào biến allWords
+     * words.json phải nằm cạnh index.html hoặc đúng đường dẫn /words.json
+     */
+    async function loadAllWords() {
+      try {
+        const resp = await fetch("words.json");
+        const data = await resp.json();
+        allWords = data;
+      } catch (err) {
+        console.error("Không thể load words.json:", err);
+      }
+    }
+
+    /**
+     * Bắt đầu quiz: lọc theo level, random thứ tự, reset biến
+     */
+    function startQuiz() {
+      levelFilter = levelSelect.value;
+      // Lọc allWords theo levelFilter
+      if (levelFilter === "ALL") {
+        quizWords = [...allWords];
+      } else {
+        quizWords = allWords.filter(w => w.level === levelFilter);
+      }
+      // Nếu không có từ nào, cảnh báo
+      if (!quizWords.length) {
+        alert("Không có từ nào cho cấp độ này.");
         return;
       }
-      if (chosenIdx === correctIdx) {
-        btnEl.classList.add("correct");
-        score++;
-      } else {
-        btnEl.classList.add("wrong");
-        const allBtns = document.querySelectorAll(".option-button");
-        if (allBtns[correctIdx]) {
-          allBtns[correctIdx].classList.add("correct");
-        }
-      }
+      // Random shuffle quizWords
+      quizWords.sort(() => Math.random() - 0.5);
 
-      // Phát audio ngay sau khi chọn
-      const audioPath = currentQuestion.answerWord.audio; 
-      if (audioPath) {
-        // encodeURI để hỗ trợ ký tự Hán
-        const encodedPath = encodeURI(audioPath);
-        const audio = new Audio(encodedPath);
-        audio.play().catch(err => {
-          console.warn("Không thể phát audio:", err);
-        });
-      }
+      // Reset biến
+      currentIdx = 0;
+      score = 0;
+      combo = 0;
+      maxCombo = 0;
+      correctAnswersCount = 0;
+      updateScoreComboUI();
 
-      nextButton.style.display = "block";
-      nextButton.onclick = () => {
-        createNewQuestion();
-      };
-      progressEl.innerText = `${score} / ${total}`;
+      // Hiển thị quizContainer
+      quizContainer.style.display = "block";
+      startQuizBtn.disabled = true;
+      levelSelect.disabled = true;
+
+      // Hiển thị câu đầu
+      showCurrentQuestion();
+
+      // Cập nhật badges (cần gọi updateBadges khi chơi xong)
     }
 
-    // Bắt đầu quiz
-    startButton.addEventListener("click", () => {
-      score = 0;
-      total = 0;
-      isQuizActive = true;
-      filterByLevel();
-      createNewQuestion();
+    /**
+     * Hiển thị câu hỏi hiện tại (quizWords[currentIdx])
+     */
+    function showCurrentQuestion() {
+      // Lấy object từ quizWords
+      const item = quizWords[currentIdx];
+      // Câu hỏi: Chọn chữ Hán có nghĩa = item.meaning
+      questionText.innerText = `Chọn chữ Hán có nghĩa: ${item.meaning}`;
+      // Random 3 đáp án sai + 1 đáp án đúng
+      let pool = [item.hanzi];
+      // Lấy ra 3 hanzi khác ngẫu nhiên (không trùng)
+      while (pool.length < 4) {
+        const pick = allWords[Math.floor(Math.random() * allWords.length)].hanzi;
+        if (!pool.includes(pick)) pool.push(pick);
+      }
+      // Shuffle pool
+      pool.sort(() => Math.random() - 0.5);
+
+      // Xóa optionsContainer
+      optionsContainer.innerHTML = "";
+
+      // Tạo 4 nút option
+      pool.forEach(ch => {
+        const optDiv = document.createElement("div");
+        optDiv.className = "option";
+        // Tìm object trong allWords để lấy pinyin
+        const obj = allWords.find(w => w.hanzi === ch);
+        const pinyin = obj ? obj.pinyin : "";
+        optDiv.innerHTML = `
+          <span class="hanzi">${ch}</span>
+          <span class="pinyin">${pinyin}</span>
+        `;
+        // Bấm vào option sẽ gọi selectOption()
+        optDiv.addEventListener("click", () => selectOption(optDiv, ch === item.hanzi));
+        optionsContainer.appendChild(optDiv);
+      });
+
+      // Ẩn nút Next, cập nhật progress
+      nextBtn.style.display = "none";
+      progressText.innerText = `${currentIdx + 1} / ${quizWords.length}`;
+    }
+
+    /**
+     * Xử lý khi người dùng chọn một option
+     * @param {HTMLElement} optDiv – thẻ div của option vừa click
+     * @param {boolean} isCorrect – đúng or sai
+     */
+    function selectOption(optDiv, isCorrect) {
+      // Vô hiệu hóa tất cả option (disabled)
+      Array.from(optionsContainer.children).forEach(d => {
+        d.classList.add("disabled");
+      });
+
+      if (isCorrect) {
+        // nếu đúng → highlight màu xanh
+        optDiv.classList.add("correct");
+        // Tăng score và combo
+        combo += 1;
+        if (combo > maxCombo) maxCombo = combo;
+        // Cơ chế điểm: mỗi câu đúng +10, nếu combo >1 thì cộng thêm combo*2
+        score += 10 + (combo > 1 ? combo * 2 : 0);
+        correctAnswersCount += 1;
+      } else {
+        // nếu sai → highlight đỏ + combo reset
+        optDiv.classList.add("wrong");
+        combo = 0;
+      }
+
+      updateScoreComboUI();
+
+      // Hiện nút Next
+      nextBtn.style.display = "block";
+    }
+
+    /**
+     * Cập nhật UI cho Score và Combo
+     */
+    function updateScoreComboUI() {
+      scoreValue.innerText = score;
+      comboValue.innerText = combo;
+    }
+
+    /**
+     * Bấm Next để chuyển câu tiếp theo
+     */
+    function nextQuestion() {
+      currentIdx += 1;
+      if (currentIdx < quizWords.length) {
+        showCurrentQuestion();
+      } else {
+        // Kết thúc quiz – hiển thị kết quả & xử lý badges, leaderboard
+        finishQuiz();
+      }
+    }
+
+    /**
+     * Khi quiz kết thúc:
+     * 1) Gọi updateBadges với stats hiện tại
+     * 2) Gọi addToLeaderboard (sau khi người chơi nhập tên)
+     * 3) Cho phép restart (về lại màn chọn level)
+     */
+    function finishQuiz() {
+      // Cập nhật badges
+      updateBadges({
+        correctAnswers: correctAnswersCount,
+        maxCombo: maxCombo,
+        streak: streakDays
+      });
+
+      // Yêu cầu người chơi nhập tên (prompt)
+      let name = prompt("Kết thúc Quiz! Điểm của bạn: " + score + "\nHãy nhập tên của bạn để lưu vào BXH:", "");
+      if (name && name.trim().length) {
+        addToLeaderboard(name.trim(), score);
+      } else {
+        // Nếu không nhập, ta vẫn render leaderboard nhưng không add mới
+        renderLeaderboard();
+      }
+
+      // Hiển thị alert tổng kết
+      alert(`Kết thúc Quiz!\nĐiểm của bạn: ${score}\nCombo cao nhất: ${maxCombo}\nChuỗi ngày học liên tiếp: ${streakDays}`);
+
+      // Cho phép chơi lại: ẩn quiz, mở lại nút start
+      quizContainer.style.display = "none";
+      startQuizBtn.disabled = false;
+      levelSelect.disabled = false;
+    }
+
+    //
+    // ─── VII. KHỞI ĐỘNG LẦN ĐẦU (Event Listeners & Load) ───────────────────────
+    //
+
+    // Khi “Bắt đầu Quiz” được ấn
+    startQuizBtn.addEventListener("click", () => {
+      startQuiz();
     });
 
-    // Khi đổi cấp độ
-    levelSelect.addEventListener("change", () => {
-      if (isQuizActive) {
-        score = 0;
-        total = 0;
-        meaningEl.innerText = "Đã đổi cấp độ. Nhấn 'Bắt đầu Quiz' để chơi lại.";
-        optionsEl.innerHTML = "";
-        nextButton.style.display = "none";
-        progressEl.innerText = `${score} / ${total}`;
-        filterByLevel();
-      } else {
-        filterByLevel();
-      }
+    // Khi “Next” được ấn
+    nextBtn.addEventListener("click", () => {
+      nextQuestion();
     });
+
+    // Khi trang vừa tải xong
+    window.addEventListener("load", async () => {
+      // 1) Tải JSON từ words.json
+      await loadAllWords();
+
+      // 2) Khởi tạo hoặc cập nhật streak (dựa vào lastPlayedDate)
+      initOrUpdateStreak();
+
+      // 3) Hiển thị badges (mảng earnedBadges) nếu đã có
+      renderBadges();
+
+      // 4) Hiển thị leaderboard
+      renderLeaderboard();
+    });
+
+  })();
   </script>
+
 </body>
 </html>
