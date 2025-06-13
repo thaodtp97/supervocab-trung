@@ -1,30 +1,33 @@
 // script.js
 const SESSION_SIZE = 50;
 let data = [], srsData = [], sessionWords = [], currentIdx = 0;
-let user = null, streakCount = 0, lastDate = null;
+let user = null, level = 'ALL', streakCount = 0, lastDate = null;
 let answeredCount = 0, correctCount = 0, wrongWords = [];
 let sessionStart = null;
 const db = firebase.firestore();
 
-// 1) Load dữ liệu & khởi SRS
+// 1) Load words.json & init SRS
 async function loadData() {
-  data = await fetch('words.json').then(r => r.json());
+  data = await fetch('words.json').then(r=>r.json());
   initSRS();
   user = localStorage.getItem('quiz_user');
+  level = localStorage.getItem('quiz_level') || 'ALL';
   if (user) initQuiz();
 }
 
-// 2) SRS: load hoặc khởi mới
+// 2) Init / load SRS
 function initSRS() {
   const key = 'srs_data';
   const st  = localStorage.getItem(key);
-  if (st) srsData = JSON.parse(st);
-  else {
+  if (st) {
+    srsData = JSON.parse(st);
+  } else {
     srsData = data.map(w => ({
       hanzi:      w.hanzi,
       pinyin:     w.pinyin,
       meaning:    w.meaning,
       audio:      w.audio,
+      level:      w.level,
       rep:        0,
       interval:   1,
       ease:       2.5,
@@ -34,11 +37,11 @@ function initSRS() {
   }
 }
 
-// 3) Khởi quiz
+// 3) Bắt đầu quiz
 function initQuiz() {
-  sessionStart  = new Date();
-  streakCount   = parseInt(localStorage.getItem(user+'_streak')) || 0;
-  lastDate      = localStorage.getItem(user+'_lastDate');
+  sessionStart = new Date();
+  streakCount  = parseInt(localStorage.getItem(user+'_streak'))||0;
+  lastDate     = localStorage.getItem(user+'_lastDate');
   updateStreak();
 
   const sk = user+'_session', ik = user+'_idx';
@@ -62,12 +65,21 @@ function initQuiz() {
   showQuestion();
 }
 
-// 4) Tạo session mới
+// 4) Tạo session mới chỉ lấy theo level
 function buildNewSession() {
   const now = new Date();
-  let due  = srsData.filter(i=>new Date(i.nextReview)<=now);
-  if (due.length < SESSION_SIZE) due = srsData.slice();
-  sessionWords = shuffle(due).slice(0,SESSION_SIZE);
+  // lọc theo level + due
+  let pool = srsData.filter(i=>{
+    return (level==='ALL' || i.level===level)
+      && new Date(i.nextReview)<=now;
+  });
+  if (pool.length < SESSION_SIZE) {
+    // fallback: chỉ lọc theo level, bỏ due
+    pool = srsData.filter(i=>{
+      return level==='ALL' || i.level===level;
+    });
+  }
+  sessionWords = shuffle(pool).slice(0, SESSION_SIZE);
   localStorage.setItem(user+'_session', JSON.stringify(sessionWords));
   currentIdx=0;
   answeredCount=0; correctCount=0;
@@ -75,35 +87,35 @@ function buildNewSession() {
   localStorage.setItem(user+'_correct',0);
 }
 
-// 5) Update streak
+// 5) Update streak display
 function updateStreak() {
   document.getElementById('streak').textContent=`Streak: ${streakCount} ngày`;
 }
 
-// 6) Update header
+// 6) Update header (câu & acc)
 function updateHeader() {
-  const qNum = Math.min(currentIdx+1,SESSION_SIZE);
-  const acc  = answeredCount?Math.round(correctCount/answeredCount*100):0;
+  const qNum=Math.min(currentIdx+1,SESSION_SIZE);
+  const acc=answeredCount?Math.round(correctCount/answeredCount*100):0;
   document.getElementById('session-stats').textContent=
     `Câu ${qNum}/${SESSION_SIZE} (Đúng: ${correctCount}) - Accuracy: ${acc}%`;
 }
 
-// 7) Hiển thị câu hỏi
+// 7) Hiển thị câu hỏi + 4 đáp án
 function showQuestion() {
-  const optDiv = document.querySelector('.options');
+  const optDiv=document.querySelector('.options');
   optDiv.innerHTML='';
   document.getElementById('next-btn').style.display='none';
   document.getElementById('end-session-btn').style.display='none';
 
   if (currentIdx>=sessionWords.length) return endSession();
 
-  const cur = sessionWords[currentIdx];
+  const cur=sessionWords[currentIdx];
   document.getElementById('question').textContent=
     `Chọn chữ Hán có nghĩa: "${cur.meaning}"`;
 
-  const choices = [cur].concat(
-    shuffle(srsData.filter(i=>i.hanzi!==cur.hanzi)).slice(0,3)
-  );
+  // 3 fake + 1 đúng, cùng level
+  const pool = srsData.filter(i=>i.hanzi!==cur.hanzi && (level==='ALL'||i.level===level));
+  const choices=[cur].concat(shuffle(pool).slice(0,3));
   shuffle(choices).forEach(item=>{
     const btn=document.createElement('button');
     btn.className='option-btn';
@@ -119,26 +131,23 @@ function showQuestion() {
 function selectAnswer(btn,item) {
   document.querySelectorAll('.option-btn').forEach(b=>b.disabled=true);
   const cur=sessionWords[currentIdx];
-  const ok = item.hanzi===cur.hanzi;
+  const ok=item.hanzi===cur.hanzi;
   if (ok) correctCount++;
   else {
     btn.classList.add('wrong');
     wrongWords.push(cur.hanzi);
   }
-
   if (!ok) {
     document.querySelectorAll('.option-btn').forEach(b=>{
       if (b.innerText.includes(cur.hanzi)) b.classList.add('correct');
     });
   } else btn.classList.add('correct');
 
-  // SRS update
-  const e = srsData.find(i=>i.hanzi===cur.hanzi);
+  // update SRS
+  const e=srsData.find(i=>i.hanzi===cur.hanzi);
   if (ok) {
     e.rep++;
-    e.interval = e.rep===1?1:
-                 e.rep===2?6:
-                 Math.ceil(e.interval*e.ease);
+    e.interval=e.rep===1?1:e.rep===2?6:Math.ceil(e.interval*e.ease);
     e.nextReview=new Date(Date.now()+e.interval*24*3600*1000).toISOString();
   } else {
     e.rep=0; e.interval=1;
@@ -151,7 +160,7 @@ function selectAnswer(btn,item) {
   localStorage.setItem(user+'_correct',correctCount);
   localStorage.setItem(user+'_idx',currentIdx);
 
-  // play audio
+  // play đúng audio
   new Audio(item.audio).play();
 
   updateHeader();
@@ -171,7 +180,7 @@ function endSession() {
   const m=Math.floor(diff/60000), s=Math.floor((diff%60000)/1000);
   const dur=`${m}m ${s}s`;
 
-  // streak
+  // cập nhật streak
   const today=end.toISOString().slice(0,10);
   const yest=new Date(Date.now()-86400000).toISOString().slice(0,10);
   if (lastDate===yest) streakCount++;
@@ -180,7 +189,7 @@ function endSession() {
   localStorage.setItem(user+'_streak',streakCount);
   localStorage.setItem(user+'_lastDate',today);
 
-  // lịch sử local
+  // lưu history local
   const hk=user+'_history';
   const hist=JSON.parse(localStorage.getItem(hk)||'[]');
   hist.push({
@@ -195,9 +204,9 @@ function endSession() {
   });
   localStorage.setItem(hk,JSON.stringify(hist));
 
-  // Firestore
+  // ghi Firestore
   db.collection('sessions').add({
-    user,
+    user, level,
     date:today,
     startTime:start.toISOString(),
     endTime:end.toISOString(),
@@ -207,7 +216,7 @@ function endSession() {
     mistakes:wrongWords
   }).catch(console.error);
 
-  // clear session
+  // reset session
   localStorage.removeItem(user+'_session');
   localStorage.removeItem(user+'_idx');
 
@@ -233,7 +242,7 @@ function renderHistory() {
   document.getElementById('history-container').style.display='block';
 }
 
-// 11) Thống kê lỗi sai
+// 11) Analytics
 document.getElementById('show-analytics-btn').onclick=()=>{
   const hist=JSON.parse(localStorage.getItem(user+'_history')||'[]');
   const cnt={};
@@ -257,16 +266,19 @@ document.getElementById('show-analytics-btn').onclick=()=>{
   document.getElementById('analytics').style.display='block';
 };
 
-// 12) Đăng nhập
+// 12) Login & lưu level
 document.getElementById('login-btn').onclick=()=>{
-  const v=document.getElementById('username-input').value.trim();
+  const v = document.getElementById('username-input').value.trim();
+  const lv= document.getElementById('level-select').value;
   if (!v) return alert('Nhập tên tài khoản!');
-  user=v; localStorage.setItem('quiz_user',user);
+  user=v; level=lv;
+  localStorage.setItem('quiz_user',user);
+  localStorage.setItem('quiz_level',level);
   initQuiz();
 };
 
-// 13) Utility shuffle
-function shuffle(a){ return a.sort(()=>Math.random()-0.5); }
+// shuffle
+function shuffle(a){return a.sort(()=>Math.random()-0.5);}
 
-// Start
+// start
 loadData();
