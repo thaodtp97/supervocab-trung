@@ -7,12 +7,14 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- LOGIN -->
   <div id="login-container">
     <h2>Đăng nhập để tiếp tục</h2>
     <input id="username-input" type="text" placeholder="Tên tài khoản" />
     <button id="login-btn">Đăng nhập</button>
   </div>
 
+  <!-- QUIZ -->
   <div id="quiz-container" style="display:none">
     <header>
       <div id="welcome"></div>
@@ -55,7 +57,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script>
-    // Firebase config (đổi thành config của bạn nếu khác)
+    // TODO: Thay bằng config của bạn
     const firebaseConfig = {
       apiKey: "AIzaSyDFAu80468VblytwF2UmKXGRAhRM5odGG8",
       authDomain: "embongtienganh.firebaseapp.com",
