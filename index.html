@@ -7,11 +7,22 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- LOGIN -->
+  <!-- LOGIN & CHỌN LEVEL -->
   <div id="login-container">
-    <h2>Đăng nhập để tiếp tục</h2>
+    <h2>Đăng nhập & chọn cấp độ</h2>
     <input id="username-input" type="text" placeholder="Tên tài khoản" />
-    <button id="login-btn">Đăng nhập</button>
+
+    <label for="level-select">Chọn HSK:</label>
+    <select id="level-select">
+      <option value="HSK1">HSK1</option>
+      <option value="HSK2">HSK2</option>
+      <option value="HSK3">HSK3</option>
+      <option value="HSK4">HSK4</option>
+      <option value="HSK5">HSK5</option>
+      <option value="ALL" selected>ALL (Tất cả)</option>
+    </select>
+
+    <button id="login-btn">Bắt đầu</button>
   </div>
 
   <!-- QUIZ -->
@@ -57,7 +68,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script>
-    // TODO: Thay bằng config của bạn
+    // Thay config của bạn nếu khác
     const firebaseConfig = {
       apiKey: "AIzaSyDFAu80468VblytwF2UmKXGRAhRM5odGG8",
       authDomain: "embongtienganh.firebaseapp.com",
