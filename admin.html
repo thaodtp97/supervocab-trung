@@ -44,12 +44,11 @@
     const db = firebase.firestore();
 
     db.collection('sessions').get().then(sn=>{
-      const users={};
+      const users = {};
       sn.forEach(doc=>{
         const s=doc.data();
-        if(!users[s.user]) users[s.user]={
-          sessions:0,correct:0,total:0,
-          mistakes:[],records:[]
+        if (!users[s.user]) users[s.user]={
+          sessions:0,correct:0,total:0,mistakes:[],records:[]
         };
         const u=users[s.user];
         u.sessions++;
