@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width">
+  <title>Admin Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <style>
+    body{font-family:sans-serif;background:#f5f5f5;padding:2rem;}
+    h1{text-align:center;margin-bottom:1rem;}
+    table{width:100%;border-collapse:collapse;margin-bottom:2rem;}
+    th,td{border:1px solid #ccc;padding:8px;text-align:center;}
+    th{background:#eee;}
+    #mistakeChart{max-width:720px;margin:auto;}
+  </style>
+</head>
+<body>
+  <h1>Dashboard Lỗi Sai & Tiến Độ</h1>
+  <table id="userTable">
+    <thead>
+      <tr>
+        <th>User</th><th>Ngày</th><th>Bắt đầu</th><th>Kết thúc</th>
+        <th>Thời gian</th><th>Session</th><th>Correct/Total</th>
+        <th>Accuracy</th><th>#Mistakes</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <canvas id="mistakeChart" width="400" height="200"></canvas>
+
+  <script>
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDFAu80468VblytwF2UmKXGRAhRM5odGG8",
+      authDomain: "embongtienganh.firebaseapp.com",
+      projectId: "embongtienganh",
+      storageBucket: "embongtienganh.appspot.com",
+      messagingSenderId: "616191414364",
+      appId: "1:616191414364:web:91a358db8a8a04f69f5699",
+      measurementId: "G-X9KNG69VPN"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    db.collection('sessions').get().then(sn=>{
+      const users={};
+      sn.forEach(doc=>{
+        const s=doc.data();
+        if(!users[s.user]) users[s.user]={
+          sessions:0,correct:0,total:0,
+          mistakes:[],records:[]
+        };
+        const u=users[s.user];
+        u.sessions++;
+        u.correct+=s.correct;
+        u.total+=s.total;
+        u.mistakes.push(...(s.mistakes||[]));
+        u.records.push({
+          date: new Date(s.date).toLocaleDateString(),
+          start:new Date(s.startTime).toLocaleTimeString(),
+          end:  new Date(s.endTime).toLocaleTimeString(),
+          dur:  s.duration
+        });
+      });
+
+      // render table
+      const tbody=document.querySelector('#userTable tbody');
+      Object.entries(users).forEach(([u,v])=>{
+        const last=v.records[v.records.length-1];
+        const acc=v.total?Math.round(v.correct/v.total*100)+'%':'0%';
+        const tr=document.createElement('tr');
+        tr.innerHTML=
+          `<td>${u}</td>`+
+          `<td>${last.date}</td>`+
+          `<td>${last.start}</td>`+
+          `<td>${last.end}</td>`+
+          `<td>${last.dur}</td>`+
+          `<td>${v.sessions}</td>`+
+          `<td>${v.correct}/${v.total}</td>`+
+          `<td>${acc}</td>`+
+          `<td>${v.mistakes.length}</td>`;
+        tbody.append(tr);
+      });
+
+      // chart mistakes
+      const all={};
+      Object.values(users).forEach(u=>{
+        u.mistakes.forEach(w=>all[w]=(all[w]||0)+1);
+      });
+      const ent=Object.entries(all)
+        .sort((a,b)=>b[1]-a[1]).slice(0,10);
+      const labels=ent.map(e=>e[0]), data=ent.map(e=>e[1]);
+      new Chart(document.getElementById('mistakeChart'),{
+        type:'bar',
+        data:{labels,datasets:[{label:'Lỗi sai',data,backgroundColor:'#f44336'}]},
+        options:{scales:{y:{beginAtZero:true}}}
+      });
+    }).catch(console.error);
+  </script>
+</body>
+</html>
