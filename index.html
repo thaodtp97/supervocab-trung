@@ -1,522 +1,72 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Siêu Từ Vựng Tiếng Trung (HSK 1–5)</title>
-  <style>
-    /* ------- Reset & Base Styles ------- */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    body {
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f5f5f5;
-      color: #333;
-      line-height: 1.4;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-    button {
-      cursor: pointer;
-      border: none;
-      outline: none;
-      background: none;
-      font-family: inherit;
-    }
-    select {
-      font-family: inherit;
-    }
-
-    /* ------- Header ------- */
-    header {
-      background-color: #5c2dcc;
-      color: white;
-      padding: 15px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    header h1 {
-      font-size: 1.5rem;
-    }
-    .stats {
-      display: flex;
-      gap: 20px;
-      font-size: 0.95rem;
-      align-items: center;
-    }
-    .stats span {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-    .stats span img {
-      width: 18px;
-      height: 18px;
-    }
-
-    /* ------- Main Container ------- */
-    main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-    }
-    .controls {
-      margin-bottom: 20px;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    .controls select {
-      padding: 6px 10px;
-      font-size: 1rem;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      background-color: white;
-    }
-    .controls button {
-      background-color: #5c2dcc;
-      color: white;
-      padding: 8px 16px;
-      font-size: 1rem;
-      border-radius: 5px;
-      transition: background-color 0.2s ease;
-    }
-    .controls button:hover {
-      background-color: #4a1bb8;
-    }
-
-    /* ------- Quiz Card ------- */
-    .quiz-card {
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 500px;
-      padding: 20px;
-      margin-bottom: 25px;
-    }
-    .prompt {
-      font-size: 1.1rem;
-      margin-bottom: 15px;
-      text-align: center;
-    }
-    .options {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-    .option {
-      background-color: #fafafa;
-      border: 2px solid #ddd;
-      border-radius: 6px;
-      padding: 12px;
-      text-align: center;
-      transition: border-color 0.2s ease, background-color 0.2s ease;
-    }
-    .option:hover {
-      border-color: #aaa;
-    }
-    .option.disabled {
-      pointer-events: none;
-      opacity: 0.7;
-    }
-    .option.correct {
-      background-color: #d4f7d4;
-      border-color: #57b857;
-    }
-    .option.wrong {
-      background-color: #f7d4d4;
-      border-color: #b85757;
-    }
-    .option .hanzi {
-      font-size: 1.5rem;
-      margin-bottom: 6px;
-      display: block;
-    }
-    .option .pinyin {
-      font-size: 0.95rem;
-      color: #555;
-    }
-    .next-button-container {
-      margin-top: 15px;
-      text-align: center;
-    }
-    .next-button-container button {
-      background-color: #5c2dcc;
-      color: white;
-      padding: 8px 16px;
-      font-size: 1rem;
-      border-radius: 5px;
-      transition: background-color 0.2s ease;
-    }
-    .next-button-container button:hover {
-      background-color: #4a1bb8;
-    }
-    .progress {
-      margin-top: 10px;
-      font-size: 0.9rem;
-      text-align: center;
-      color: #555;
-    }
-
-    /* ------- Badges & Leaderboard ------- */
-    .badges, .leaderboard {
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 500px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
-    .badges h2, .leaderboard h2 {
-      font-size: 1.1rem;
-      margin-bottom: 12px;
-      color: #5c2dcc;
-    }
-    .badges .badge-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    .badge {
-      background-color: #f0f0f0;
-      border-radius: 20px;
-      padding: 6px 12px;
-      font-size: 0.9rem;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .badge img {
-      width: 18px;
-      height: 18px;
-    }
-    .leaderboard .entry {
-      display: flex;
-      justify-content: space-between;
-      padding: 8px 0;
-      border-bottom: 1px solid #eee;
-      font-size: 0.95rem;
-    }
-    .leaderboard .entry:last-child {
-      border-bottom: none;
-    }
-
-    /* ------- Footer ------- */
-    footer {
-      text-align: center;
-      font-size: 0.9rem;
-      color: #777;
-      padding: 15px 0;
-      background-color: #fafafa;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Quiz Từ Mới – Tiếng Trung</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div id="login-container">
+    <h2>Đăng nhập để tiếp tục</h2>
+    <input id="username-input" type="text" placeholder="Tên tài khoản" />
+    <button id="login-btn">Đăng nhập</button>
+  </div>
 
-  <!-- Header -->
-  <header>
-    <h1>Siêu Từ Vựng Tiếng Trung (HSK 1–5)</h1>
-    <div class="stats">
-      <span><img src="https://img.icons8.com/emoji/48/000000/star-emoji.png" alt="Stars" /> <span id="star-count">0</span></span>
-      <span><img src="https://img.icons8.com/fluency/48/000000/fire-element.png" alt="Streak" /> <span id="streak-count">0</span></span>
-      <span><img src="https://img.icons8.com/ios-filled/50/000000/calendar.png" alt="Days" /> <span id="day-streak">0 ngày</span></span>
-    </div>
-  </header>
+  <div id="quiz-container" style="display:none">
+    <header>
+      <div id="welcome"></div>
+      <div id="streak">Streak: 0 ngày</div>
+      <div id="session-stats">Câu 0/0 (Đúng: 0) - Accuracy: 0%</div>
+      <button id="show-analytics-btn" style="display:none">Xem thống kê</button>
+    </header>
 
-  <!-- Main Content -->
-  <main>
-    <!-- Controls: Level Selection & Start Button -->
-    <div class="controls">
-      <label for="level-select">Chọn cấp độ:</label>
-      <select id="level-select">
-        <option value="ALL">Tất cả (HSK 1–5)</option>
-        <option value="HSK1">HSK 1</option>
-        <option value="HSK2">HSK 2</option>
-        <option value="HSK3">HSK 3</option>
-        <option value="HSK4">HSK 4</option>
-        <option value="HSK5">HSK 5</option>
-      </select>
-      <button id="start-btn">Bắt đầu Quiz</button>
-    </div>
-
-    <!-- Quiz Card -->
-    <div class="quiz-card" id="quiz-card" style="display: none;">
-      <div class="prompt" id="prompt-text">
-        Chọn chữ Hán có nghĩa:
+    <section class="quiz-box">
+      <h2 id="question">Đang tải…</h2>
+      <div class="options"></div>
+      <div class="controls">
+        <button id="next-btn" style="display:none">Tiếp theo</button>
+        <button id="end-session-btn" style="display:none">Kết thúc session</button>
       </div>
-      <div class="options" id="options-container">
-        <!-- Các ô đáp án sẽ được tạo động tại đây -->
-      </div>
-      <div class="next-button-container" id="next-button-container" style="display: none;">
-        <button id="next-btn">Câu Tiếp Theo</button>
-      </div>
-      <div class="progress" id="progress-text">0 / 0</div>
-    </div>
+    </section>
 
-    <!-- Badges Section -->
-    <div class="badges" id="badges-section" style="display: none;">
-      <h2>Huy hiệu đã đạt được</h2>
-      <div class="badge-list" id="badge-list">
-        <!-- Các huy hiệu (badges) sẽ xuất hiện ở đây -->
-      </div>
-    </div>
+    <section id="history-container" style="display:none">
+      <h3>Lịch sử học</h3>
+      <table id="history-table">
+        <thead>
+          <tr>
+            <th>Ngày</th><th>Đúng</th><th>Tổng</th><th>%</th><th>Lỗi</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
 
-    <!-- Leaderboard Section -->
-    <div class="leaderboard" id="leaderboard-section" style="display: none;">
-      <h2>Bảng xếp hạng (Leaderboard)</h2>
-      <div id="leaderboard-list">
-        <!-- Các entry leaderboard sẽ hiển thị ở đây -->
-        <div>Chưa có bảng xếp hạng</div>
-      </div>
-    </div>
-  </main>
+    <section id="analytics" style="display:none">
+      <h3>Top 10 lỗi sai</h3>
+      <canvas id="mistakeChart"></canvas>
+      <ul id="mistakeList"></ul>
+    </section>
+  </div>
 
-  <!-- Footer -->
-  <footer>
-    © 2025 – Siêu Từ Vựng – Học tiếng Trung mỗi ngày
-  </footer>
-
-  <!-- JavaScript -->
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Firebase compat SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script>
-    // ---------- Biến toàn cục & DOM references ----------
-    const startBtn = document.getElementById("start-btn");
-    const levelSelect = document.getElementById("level-select");
-    const quizCard = document.getElementById("quiz-card");
-    const promptText = document.getElementById("prompt-text");
-    const optionsContainer = document.getElementById("options-container");
-    const nextBtn = document.getElementById("next-btn");
-    const nextBtnContainer = document.getElementById("next-button-container");
-    const progressText = document.getElementById("progress-text");
-    const badgeList = document.getElementById("badge-list");
-    const badgesSection = document.getElementById("badges-section");
-    const leaderboardSection = document.getElementById("leaderboard-section");
-    const leaderboardList = document.getElementById("leaderboard-list");
-    const starCountSpan = document.getElementById("star-count");
-    const streakCountSpan = document.getElementById("streak-count");
-    const dayStreakSpan = document.getElementById("day-streak");
-
-    let allWords = [];        // Mảng đựng toàn bộ từ từ words.json
-    let quizWords = [];       // Mảng đựng từ được chọn để quiz (đã lọc theo level)
-    let currentQuestionIndex = 0;
-    let correctWord = null;   // Đối tượng word đúng cho câu hỏi hiện tại
-    let score = 0;
-    let streak = 0;
-    let dayStreak = 0;        // Giả sử lưu localStorage hoặc gì đó
-
-    // ---------- Hàm khởi tạo --------------------------------
-    async function init() {
-      // Fetch từ words.json
-      try {
-        const res = await fetch("words.json");
-        if (!res.ok) throw new Error("Không tải được words.json");
-        const data = await res.json();
-        allWords = data;
-      } catch (err) {
-        alert("Lỗi tải dữ liệu từ words.json: " + err);
-      }
-    }
-
-    // ---------- Hàm chọn bộ từ theo cấp độ ----------------
-    function filterWordsByLevel(level) {
-      if (level === "ALL") {
-        return [...allWords];
-      } else {
-        return allWords.filter(word => word.level === level);
-      }
-    }
-
-    // ---------- Hàm xáo trộn mảng (Fisher-Yates shuffle) ---
-    function shuffleArray(arr) {
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-      return arr;
-    }
-
-    // ---------- Hàm chuẩn bị câu hỏi tiếp theo --------------
-    function loadNextQuestion() {
-      // Xóa nội dung cũ
-      optionsContainer.innerHTML = "";
-      nextBtnContainer.style.display = "none";
-
-      // Nếu đã hết câu hỏi
-      if (currentQuestionIndex >= quizWords.length) {
-        promptText.textContent = "Đã hoàn thành quiz!";
-        progressText.textContent = `${quizWords.length} / ${quizWords.length}`;
-        return;
-      }
-
-      // Thiết lập từ đúng
-      correctWord = quizWords[currentQuestionIndex];
-
-      // Chọn 3 từ ngẫu nhiên khác (của cùng cấp độ) làm distractors
-      const sameLevelWords = allWords.filter(w => w.level === correctWord.level && w.hanzi !== correctWord.hanzi);
-      shuffleArray(sameLevelWords);
-      const distractors = sameLevelWords.slice(0, 3);
-
-      // Tạo mảng 4 lựa chọn & xáo trộn
-      const options = shuffleArray([correctWord, ...distractors]);
-
-      // Hiển thị prompt (ý nghĩa)
-      promptText.textContent = `Chọn chữ Hán có nghĩa: ${correctWord.meaning}`;
-
-      // Hiển thị từng lựa chọn
-      options.forEach(opt => {
-        const optDiv = document.createElement("div");
-        optDiv.classList.add("option");
-        optDiv.dataset.hanzi = opt.hanzi;
-        optDiv.dataset.audio = opt.audio;
-
-        const hanziSpan = document.createElement("span");
-        hanziSpan.classList.add("hanzi");
-        hanziSpan.textContent = opt.hanzi;
-
-        const pinyinSpan = document.createElement("span");
-        pinyinSpan.classList.add("pinyin");
-        pinyinSpan.textContent = opt.pinyin;
-
-        optDiv.appendChild(hanziSpan);
-        optDiv.appendChild(pinyinSpan);
-
-        optDiv.addEventListener("click", () => handleOptionClick(optDiv, opt));
-        optionsContainer.appendChild(optDiv);
-      });
-
-      // Cập nhật progress
-      progressText.textContent = `${currentQuestionIndex + 1} / ${quizWords.length}`;
-    }
-
-    // ---------- Hàm xử lý khi bấm vào 1 đáp án ---------------
-    function handleOptionClick(optionDiv, wordObj) {
-      // Vô hiệu hóa tất cả option
-      document.querySelectorAll(".option").forEach(el => {
-        el.classList.add("disabled");
-      });
-
-      // Nếu chọn đúng
-      if (wordObj.hanzi === correctWord.hanzi) {
-        optionDiv.classList.add("correct");
-        streak += 1;
-        score += 1;
-        // Phát âm
-        playAudio(correctWord.audio);
-        updateStatsUI();
-      } else {
-        // Chọn sai
-        optionDiv.classList.add("wrong");
-        // Highlight đáp án đúng
-        const correctDiv = document.querySelector(`.option[data-hanzi="${correctWord.hanzi}"]`);
-        if (correctDiv) correctDiv.classList.add("correct");
-        // Vẫn phát âm từ đúng để học viên nghe
-        playAudio(correctWord.audio);
-        streak = 0; // reset streak
-        updateStatsUI();
-      }
-
-      // Hiện nút "Câu tiếp theo"
-      nextBtnContainer.style.display = "block";
-    }
-
-    // ---------- Hàm phát âm MP3 ----------------------------
-    function playAudio(path) {
-      const audio = new Audio(path);
-      audio.play().catch(err => {
-        console.warn("Không thể phát audio:", err);
-      });
-    }
-
-    // ---------- Hàm cập nhật giao diện số liệu (score, streak) ----
-    function updateStatsUI() {
-      starCountSpan.textContent = score;
-      streakCountSpan.textContent = streak;
-      // Chưa có logic ngày liên tiếp, giả sử hiển thị tĩnh:
-      dayStreakSpan.textContent = `${dayStreak} ngày`;
-    }
-
-    // ---------- Xử lý bấm nút "Câu Tiếp Theo" -------------
-    nextBtn.addEventListener("click", () => {
-      currentQuestionIndex++;
-      loadNextQuestion();
-    });
-
-    // ---------- Xử lý bấm nút "Bắt đầu Quiz" --------------
-    startBtn.addEventListener("click", () => {
-      // Lấy cấp độ người dùng chọn
-      const selectedLevel = levelSelect.value;
-      // Lọc & xáo trộn
-      quizWords = filterWordsByLevel(selectedLevel);
-      shuffleArray(quizWords);
-      // Giới hạn số câu hỏi (nếu muốn) hoặc dùng hết
-      // Ví dụ giới hạn 300 câu nếu bộ có nhiều hơn 300:
-      // if (quizWords.length > 300) quizWords = quizWords.slice(0, 300);
-
-      if (quizWords.length === 0) {
-        alert("Không có từ nào cho cấp độ này.");
-        return;
-      }
-
-      // Reset counters
-      currentQuestionIndex = 0;
-      score = 0;
-      streak = 0;
-      updateStatsUI();
-
-      // Ẩn/hiện các thành phần
-      quizCard.style.display = "block";
-      badgesSection.style.display = "block";
-      leaderboardSection.style.display = "block";
-      // Tạo/hiển thị badges mẫu (demo)
-      renderBadgesUI();
-
-      // Bắt đầu load câu hỏi đầu tiên
-      loadNextQuestion();
-      // Cuộn lên đầu trang (mobile friendly)
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
-
-    // ---------- Hàm hiển thị badges mẫu ------------------
-    function renderBadgesUI() {
-      badgeList.innerHTML = "";
-      // Ví dụ badges mẫu
-      const demoBadges = [
-        { icon: "https://img.icons8.com/emoji/48/000000/party-popper.png", label: "Lần đầu Trả Lời Đúng" },
-        { icon: "https://img.icons8.com/fluency/48/000000/fire-element.png", label: "5 Câu Liên Tiếp Đúng" },
-        { icon: "https://img.icons8.com/emoji/48/000000/explosion-emoji.png", label: "10 Câu Liên Tiếp Đúng" },
-        { icon: "https://img.icons8.com/emoji/48/000000/medal-emoji.png", label: "Chuỗi 7 Ngày Liên Tiếp" },
-        { icon: "https://img.icons8.com/emoji/48/000000/medal-2-emoji.png", label: "Chuỗi 30 Ngày Liên Tiếp" }
-      ];
-      demoBadges.forEach(b => {
-        const badgeDiv = document.createElement("div");
-        badgeDiv.classList.add("badge");
-        const img = document.createElement("img");
-        img.src = b.icon;
-        img.alt = b.label;
-        const text = document.createElement("span");
-        text.textContent = b.label;
-        badgeDiv.appendChild(img);
-        badgeDiv.appendChild(text);
-        badgeList.appendChild(badgeDiv);
-      });
-    }
-
-    // ---------- Khởi động -----------------------------------
-    init();
+    // Firebase config (đổi thành config của bạn nếu khác)
+    const firebaseConfig = {
+      apiKey: "AIzaSyDFAu80468VblytwF2UmKXGRAhRM5odGG8",
+      authDomain: "embongtienganh.firebaseapp.com",
+      projectId: "embongtienganh",
+      storageBucket: "embongtienganh.appspot.com",
+      messagingSenderId: "616191414364",
+      appId: "1:616191414364:web:91a358db8a8a04f69f5699",
+      measurementId: "G-X9KNG69VPN"
+    };
+    firebase.initializeApp(firebaseConfig);
   </script>
+  <script src="script.js"></script>
 </body>
 </html>
